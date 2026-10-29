@@ -1,0 +1,50 @@
+server:
+  port: 8080
+  servlet:
+    session:
+      cookie:
+        same-site: lax
+
+spring:
+  application:
+    name: booking-api
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/booking}
+    username: ${DB_USER:booking}
+    password: ${DB_PASSWORD:booking}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none   # Flyway owns the schema (see db/migration)
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  mail:
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:1025}
+    properties:
+      mail.smtp.auth: false
+      mail.smtp.starttls.enable: false
+
+app:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4200}
+  reminders:
+    lead-minutes: ${REMINDER_LEAD_MINUTES:15}
+    poll-interval-ms: ${REMINDER_POLL_INTERVAL_MS:60000}
+    mail-from: ${REMINDER_MAIL_FROM:no-reply@booking.local}
+  admin:
+    username: ${ADMIN_USERNAME:admin}
+    password: ${ADMIN_PASSWORD:CapitecAdmin123!}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
