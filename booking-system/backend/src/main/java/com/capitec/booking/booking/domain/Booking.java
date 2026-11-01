@@ -1,7 +1,6 @@
 package com.capitec.booking.booking.domain;
 
 import com.capitec.booking.booking.enums.BookingStatus;
-import com.capitec.booking.resource.Resource;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -16,7 +15,7 @@ public class Booking {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "resource_id", nullable = false)
-    private Resource resource;
+    private com.capitec.booking.entities.Booking resource;
 
     @Column(name = "customer_name", nullable = false, length = 120)
     private String customerName;
@@ -50,7 +49,7 @@ public class Booking {
     protected Booking() {
     }
 
-    public Booking(Resource resource, String customerName, String customerEmail, String notes,
+    public Booking(com.capitec.booking.entities.Booking resource, String customerName, String customerEmail, String notes,
                    LocalDateTime startTime, LocalDateTime endTime, LocalDateTime createdAt) {
         this.resource = resource;
         this.customerName = customerName;
@@ -70,7 +69,7 @@ public class Booking {
     }
 
     /** Admin edit: full replacement of the bookable details. Resets reminderSent since the old flag no longer applies to the new time. */
-    public void reschedule(Resource resource, String customerName, String customerEmail, String notes,
+    public void reschedule(com.capitec.booking.entities.Booking resource, String customerName, String customerEmail, String notes,
                            LocalDateTime startTime, LocalDateTime endTime) {
         this.resource = resource;
         this.customerName = customerName;
@@ -86,7 +85,7 @@ public class Booking {
     }
 
     public Long getId() { return id; }
-    public Resource getResource() { return resource; }
+    public com.capitec.booking.entities.Booking getResource() { return resource; }
     public String getCustomerName() { return customerName; }
     public String getCustomerEmail() { return customerEmail; }
     public String getNotes() { return notes; }

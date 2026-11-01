@@ -1,10 +1,11 @@
-package com.capitec.booking.resource;
+package com.capitec.booking.services;
 
-import com.capitec.booking.booking.domain.Booking;
 import com.capitec.booking.booking.repository.BookingRepository;
 import com.capitec.booking.common.NotFoundException;
-import com.capitec.booking.resource.ResourceDtos.CreateResourceRequest;
-import com.capitec.booking.resource.ResourceDtos.SlotResponse;
+import com.capitec.booking.repository.ResourceRepository;
+import com.capitec.booking.entities.Booking;
+import com.capitec.booking.resource.SlotDto.CreateResourceRequest;
+import com.capitec.booking.resource.SlotDto.SlotResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,32 +29,32 @@ public class ResourceService {
         this.clock = clock;
     }
 
-    public List<Resource> findAll() {
+    public List<Booking> findAll() {
         return resources.findAllByOrderByNameAsc();
     }
 
-    public Resource get(Long id) {
+    public Booking get(Long id) {
         return resources.findById(id)
                 .orElseThrow(() -> new NotFoundException("Resource " + id + " not found"));
     }
 
     @Transactional
-    public Resource create(CreateResourceRequest req) {
+    public Booking create(CreateResourceRequest req) {
         if (!req.closeTime().isAfter(req.openTime())) {
             throw new IllegalArgumentException("closeTime must be after openTime");
         }
-        return resources.save(new Resource(req.name(), req.description(), req.location(), req.capacity(),
+        return resources.save(new Booking(req.name(), req.description(), req.location(), req.capacity(),
                 req.openTime(), req.closeTime(), req.slotMinutes()));
     }
 
     /** Splits the resource's opening hours on a given day into slots and marks which are free. */
     public List<SlotResponse> availability(Long resourceId, LocalDate date) {
-        Resource resource = get(resourceId);
+        Booking resource = get(resourceId);
         LocalDateTime dayStart = date.atTime(resource.getOpenTime());
         LocalDateTime dayEnd = date.atTime(resource.getCloseTime());
         LocalDateTime now = LocalDateTime.now(clock);
 
-        List<Booking> taken = bookings.findConfirmedInRange(resourceId, dayStart, dayEnd);
+        List<com.capitec.booking.booking.domain.Booking> taken = bookings.findConfirmedInRange(resourceId, dayStart, dayEnd);
 
         List<SlotResponse> slots = new ArrayList<>();
         LocalDateTime cursor = dayStart;

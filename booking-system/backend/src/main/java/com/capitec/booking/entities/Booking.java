@@ -1,4 +1,4 @@
-package com.capitec.booking.resource;
+package com.capitec.booking.entities;
 
 import jakarta.persistence.*;
 
@@ -7,7 +7,7 @@ import java.time.LocalTime;
 /** Something that can be booked: a room, a desk, a consultant, a court... */
 @Entity
 @Table(name = "resources")
-public class Resource {
+public class Booking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,11 +33,11 @@ public class Resource {
     @Column(name = "slot_minutes", nullable = false)
     private int slotMinutes = 60;
 
-    protected Resource() {
+    protected Booking() {
     }
 
-    public Resource(String name, String description, String location, int capacity,
-                    LocalTime openTime, LocalTime closeTime, int slotMinutes) {
+    public Booking(String name, String description, String location, int capacity,
+                   LocalTime openTime, LocalTime closeTime, int slotMinutes) {
         this.name = name;
         this.description = description;
         this.location = location;

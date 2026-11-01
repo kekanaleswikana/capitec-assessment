@@ -1,8 +1,9 @@
-package com.capitec.booking.resource;
+package com.capitec.booking.controller;
 
-import com.capitec.booking.resource.ResourceDtos.CreateResourceRequest;
-import com.capitec.booking.resource.ResourceDtos.ResourceResponse;
-import com.capitec.booking.resource.ResourceDtos.SlotResponse;
+import com.capitec.booking.resource.SlotDto.CreateResourceRequest;
+import com.capitec.booking.resource.SlotDto.ResourceResponse;
+import com.capitec.booking.resource.SlotDto.SlotResponse;
+import com.capitec.booking.services.ResourceService;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;

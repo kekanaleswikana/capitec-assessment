@@ -1,19 +1,20 @@
 package com.capitec.booking.resource;
 
+import com.capitec.booking.entities.Booking;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-public final class ResourceDtos {
+public final class SlotDto {
 
-    private ResourceDtos() {
+    private SlotDto() {
     }
 
     public record ResourceResponse(Long id, String name, String description, String location,
                                    int capacity, LocalTime openTime, LocalTime closeTime, int slotMinutes) {
 
-        public static ResourceResponse from(Resource r) {
+        public static ResourceResponse from(Booking r) {
             return new ResourceResponse(r.getId(), r.getName(), r.getDescription(), r.getLocation(),
                     r.getCapacity(), r.getOpenTime(), r.getCloseTime(), r.getSlotMinutes());
         }

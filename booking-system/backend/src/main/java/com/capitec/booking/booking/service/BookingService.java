@@ -5,13 +5,12 @@ import com.capitec.booking.audit.domain.AuditAction;
 import com.capitec.booking.booking.domain.BookingDtos.AdminUpdateBookingRequest;
 import com.capitec.booking.booking.domain.BookingDtos.CreateBookingRequest;
 import com.capitec.booking.booking.enums.BookingStatus;
-import com.capitec.booking.booking.domain.Booking;
 import com.capitec.booking.booking.notification.NotificationService;
 import com.capitec.booking.booking.repository.BookingRepository;
 import com.capitec.booking.common.ConflictException;
 import com.capitec.booking.common.NotFoundException;
-import com.capitec.booking.resource.Resource;
-import com.capitec.booking.resource.ResourceService;
+import com.capitec.booking.entities.Booking;
+import com.capitec.booking.services.ResourceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -45,8 +44,8 @@ public class BookingService {
     }
 
     @Transactional
-    public Booking create(CreateBookingRequest req) {
-        Resource resource = resources.get(req.resourceId());
+    public com.capitec.booking.booking.domain.Booking create(CreateBookingRequest req) {
+        Booking resource = resources.get(req.resourceId());
         LocalDateTime start = req.startTime();
         LocalDateTime end = req.endTime();
 
@@ -59,9 +58,9 @@ public class BookingService {
             throw new ConflictException("That time slot is already booked");
         }
 
-        Booking booking = new Booking(resource, req.customerName().trim(), req.customerEmail().trim(),
+        com.capitec.booking.booking.domain.Booking booking = new com.capitec.booking.booking.domain.Booking(resource, req.customerName().trim(), req.customerEmail().trim(),
                 req.notes(), start, end, LocalDateTime.now(clock));
-        Booking saved = bookings.saveAndFlush(booking);
+        com.capitec.booking.booking.domain.Booking saved = bookings.saveAndFlush(booking);
         audit.record(saved, AuditAction.CREATED, CUSTOMER_ACTOR, null);
 
         // Best-effort: a slow/broken mail server shouldn't fail an otherwise-valid booking.
@@ -74,13 +73,13 @@ public class BookingService {
         return saved;
     }
 
-    public Booking get(Long id) {
+    public com.capitec.booking.booking.domain.Booking get(Long id) {
         return bookings.findById(id)
                 .orElseThrow(() -> new NotFoundException("Booking " + id + " not found"));
     }
 
     /** Self-service lookup: requires the customer's own email, never returns the whole table. */
-    public List<Booking> find(String email) {
+    public List<com.capitec.booking.booking.domain.Booking> find(String email) {
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("email is required");
         }
@@ -88,27 +87,27 @@ public class BookingService {
     }
 
     /** Admin-only: every booking, regardless of customer. */
-    public List<Booking> findAll() {
+    public List<com.capitec.booking.booking.domain.Booking> findAll() {
         return bookings.findAllWithResource();
     }
 
     @Transactional
-    public Booking cancel(Long id) {
-        Booking booking = get(id);
+    public com.capitec.booking.booking.domain.Booking cancel(Long id) {
+        com.capitec.booking.booking.domain.Booking booking = get(id);
         if (booking.getStatus() == BookingStatus.CANCELLED) {
             throw new ConflictException("Booking is already cancelled");
         }
         booking.cancel();
-        Booking saved = bookings.saveAndFlush(booking);
+        com.capitec.booking.booking.domain.Booking saved = bookings.saveAndFlush(booking);
         audit.record(saved, AuditAction.CANCELLED, CUSTOMER_ACTOR, null);
         return saved;
     }
 
     /** Admin-only: full replacement of a booking's details, including resource, time and status. */
     @Transactional
-    public Booking adminUpdate(Long id, AdminUpdateBookingRequest req, String actor) {
-        Booking booking = get(id);
-        Resource resource = resources.get(req.resourceId());
+    public com.capitec.booking.booking.domain.Booking adminUpdate(Long id, AdminUpdateBookingRequest req, String actor) {
+        com.capitec.booking.booking.domain.Booking booking = get(id);
+        Booking resource = resources.get(req.resourceId());
         LocalDateTime start = req.startTime();
         LocalDateTime end = req.endTime();
 
@@ -126,7 +125,7 @@ public class BookingService {
 
         booking.reschedule(resource, newCustomerName, newCustomerEmail, req.notes(), start, end);
         booking.markStatus(req.status());
-        Booking saved = bookings.saveAndFlush(booking);
+        com.capitec.booking.booking.domain.Booking saved = bookings.saveAndFlush(booking);
 
         AuditAction action = (previousStatus != BookingStatus.CANCELLED && req.status() == BookingStatus.CANCELLED)
                 ? AuditAction.CANCELLED : AuditAction.UPDATED;
@@ -135,7 +134,7 @@ public class BookingService {
         return saved;
     }
 
-    private String describeChanges(Booking before, Resource newResource, String newCustomerName,
+    private String describeChanges(com.capitec.booking.booking.domain.Booking before, Booking newResource, String newCustomerName,
                                    String newCustomerEmail, LocalDateTime newStart, LocalDateTime newEnd,
                                    BookingStatus newStatus) {
         List<String> changes = new ArrayList<>();
@@ -154,7 +153,7 @@ public class BookingService {
         return changes.isEmpty() ? "no changes" : String.join("; ", changes);
     }
 
-    private void validateWindow(Resource resource, LocalDateTime start, LocalDateTime end) {
+    private void validateWindow(Booking resource, LocalDateTime start, LocalDateTime end) {
         if (!end.isAfter(start)) {
             throw new IllegalArgumentException("endTime must be after startTime");
         }
