@@ -1,8 +1,7 @@
 package com.capitec.booking.services;
 
-import com.capitec.booking.booking.repository.BookingRepository;
 import com.capitec.booking.common.NotFoundException;
-import com.capitec.booking.repository.ResourceRepository;
+import com.capitec.booking.repository.BookingRepository;
 import com.capitec.booking.entities.Booking;
 import com.capitec.booking.resource.SlotDto.CreateResourceRequest;
 import com.capitec.booking.resource.SlotDto.SlotResponse;
@@ -17,13 +16,13 @@ import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
-public class ResourceService {
+public class BookingService {
 
-    private final ResourceRepository resources;
-    private final BookingRepository bookings;
+    private final BookingRepository resources;
+    private final com.capitec.booking.booking.repository.BookingRepository bookings;
     private final Clock clock;
 
-    public ResourceService(ResourceRepository resources, BookingRepository bookings, Clock clock) {
+    public BookingService(BookingRepository resources, com.capitec.booking.booking.repository.BookingRepository bookings, Clock clock) {
         this.resources = resources;
         this.bookings = bookings;
         this.clock = clock;

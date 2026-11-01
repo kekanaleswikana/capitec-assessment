@@ -3,7 +3,7 @@ package com.capitec.booking.controller;
 import com.capitec.booking.resource.SlotDto.CreateResourceRequest;
 import com.capitec.booking.resource.SlotDto.ResourceResponse;
 import com.capitec.booking.resource.SlotDto.SlotResponse;
-import com.capitec.booking.services.ResourceService;
+import com.capitec.booking.services.BookingService;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -14,11 +14,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/resources")
-public class ResourceController {
+public class BookingController {
 
-    private final ResourceService service;
+    private final BookingService service;
 
-    public ResourceController(ResourceService service) {
+    public BookingController(BookingService service) {
         this.service = service;
     }
 

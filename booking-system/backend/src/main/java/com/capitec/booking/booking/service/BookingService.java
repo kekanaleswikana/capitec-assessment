@@ -10,7 +10,6 @@ import com.capitec.booking.booking.repository.BookingRepository;
 import com.capitec.booking.common.ConflictException;
 import com.capitec.booking.common.NotFoundException;
 import com.capitec.booking.entities.Booking;
-import com.capitec.booking.services.ResourceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -29,12 +28,12 @@ public class BookingService {
     private static final String CUSTOMER_ACTOR = "customer";
 
     private final BookingRepository bookings;
-    private final ResourceService resources;
+    private final com.capitec.booking.services.BookingService resources;
     private final NotificationService notifier;
     private final BookingAuditService audit;
     private final Clock clock;
 
-    public BookingService(BookingRepository bookings, ResourceService resources,
+    public BookingService(BookingRepository bookings, com.capitec.booking.services.BookingService resources,
                           NotificationService notifier, BookingAuditService audit, Clock clock) {
         this.bookings = bookings;
         this.resources = resources;
